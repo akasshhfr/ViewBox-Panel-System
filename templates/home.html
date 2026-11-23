@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block content %}
+<h1>Surveys open now</h1><p class="sub">Hi {{ (me['name'] or '').split(' ')[0] }}, here is how you match each one, and why.</p>
+{% if again %}<div class="flash warn">You recently completed a survey. You can join a new one from <b>{{ fmt(again) }}</b>.</div>{% endif %}
+<div class="cards">
+{% for c in cards %}<div class="card">
+ <div class="cardhead" style="margin-bottom:6px"><h3>{{ c.s['title'] }}</h3><span class="badge b-{{ c.res.status }}">{{ c.res.status }}</span></div>
+ <p class="mute" style="margin:0">{{ c.s['description'] }}</p><p class="mute" style="margin:2px 0 0">Closes {{ fmt(parse_date(c.s['deadline'])) }}</p>
+ {% if c.match %}<div class="tags"><span class="badge b-match">Matches your interests: {{ c.match|join(', ') }}</span></div>{% endif %}
+ <div class="reason">{{ c.res.reason }}</div></div>
+{% else %}<div class="card empty" style="grid-column:1/-1">No surveys are live right now. Please check back soon.</div>{% endfor %}
+</div>{% endblock %}

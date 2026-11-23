@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% from "_icons.html" import icon %}
+{% block crumb %}{{ icon('zap') }}Meta leads{% endblock %}
+{% block content %}<h1>Meta lead ads</h1><p class="sub">Every lead received, including rejected and duplicate ones.</p>
+<div class="card scroll"><table class="tbl"><tr><th>Received</th><th>Lead ID</th><th>Status</th><th>Member</th><th>Problems</th></tr>{% for r in rows %}<tr><td>{{ r['received_at'] }}</td><td>{{ r['leadgen_id'] or '-' }}</td><td><span class="badge b-{{ r['status'] }}">{{ r['status'] }}</span></td><td>{{ r['member_code'] or '-' }}</td><td class="wrap">{{ r['errors'] or '' }}</td></tr>{% else %}<tr><td colspan="5" class="empty">No leads received yet. See the README for a sample request.</td></tr>{% endfor %}</table></div>{% endblock %}

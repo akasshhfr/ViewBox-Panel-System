@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% from "_icons.html" import icon %}
+{% block crumb %}{{ icon('upload') }}Import CSV{% endblock %}
+{% block content %}<h1>Import members</h1><p class="sub">Upload the members CSV. You see a preview and the reason for every fixed or skipped row before anything is saved.</p>
+<form class="card" method="post" enctype="multipart/form-data" data-busy><label for="f" style="margin-top:0">Members CSV file</label><input id="f" type="file" name="file" accept=".csv" required>
+<button type="submit" style="margin-top:14px">{{ icon('upload', 16) }}Preview import</button></form>
+{% if report is defined %}
+<div class="stats"><div class="stat"><div class="label">Rows read</div><div class="num">{{ counts.rows_read }}</div><div class="tile">{{ icon('file', 26) }}</div></div>
+<div class="stat"><div class="label">Will be imported</div><div class="num">{{ counts.imported }}</div><div class="tile">{{ icon('check', 26) }}</div></div>
+<div class="stat"><div class="label">Skipped</div><div class="num">{{ counts.skipped }}</div><div class="tile">{{ icon('file', 26) }}</div></div>
+<div class="stat"><div class="label">Fixed</div><div class="num">{{ counts.fixed }}</div><div class="tile">{{ icon('select', 26) }}</div></div></div>
+<form method="post" class="card" data-busy><input type="hidden" name="token" value="{{ token }}"><div class="cardhead" style="margin:0"><span>Happy with this? Saving imports {{ counts.imported }} members. Nothing is deleted.</span><button type="submit">Confirm and import</button></div></form>
+<div class="card scroll"><div class="cardhead"><h2>Preview (first {{ rows|length }} clean rows)</h2></div><table class="tbl"><tr><th>ID</th><th>Name</th><th>Phone</th><th>City</th><th>Gender</th><th>DOB</th><th>Source</th></tr>{% for r in rows %}<tr><td>{{ r.member_code }}</td><td>{{ r.name }}</td><td>{{ r.phone }}</td><td>{{ r.city or '-' }}</td><td>{{ r.gender or '-' }}</td><td>{{ r.dob or '-' }}</td><td>{{ r.source }}</td></tr>{% endfor %}</table></div>
+<div class="card scroll"><div class="cardhead"><h2>Skipped and fixed rows ({{ report|length }})</h2></div><table class="tbl"><tr><th>Line</th><th>Member</th><th>Result</th><th>What happened</th></tr>{% for x in report|sort(attribute='action', reverse=True) %}<tr><td>{{ x.line }}</td><td>{{ x.member }}</td><td><span class="badge {{ 'b-failed' if x.action=='Skipped' else 'b-fit' }}">{{ x.action }}</span></td><td class="wrap">{{ x.detail }}</td></tr>{% endfor %}</table></div>{% endif %}{% endblock %}

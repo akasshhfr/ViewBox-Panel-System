@@ -1,0 +1,6 @@
+<tr data-total="{{ total }}" hidden></tr>
+{% for r in rows %}<tr><td><a href="/admin/members/{{ r['id'] }}">{{ r['member_code'] }}</a></td>
+<td><span class="who"><span class="av">{{ (r['name'] or '?')[0]|upper }}</span>{{ r['name'] or '-' }}{% if r['flag'] %} <span class="badge b-Waitlisted" title="{{ r['flag'] }}">flag</span>{% endif %}</span></td>
+<td>{{ r['phone'] }}</td><td>{{ r['city'] or '-' }}</td><td>{{ r['source_name'] or '-' }}</td><td><span class="badge b-{{ r['stage'] }}">{{ stage_label(r) }}</span></td><td>{{ r['joined_on'] or '-' }}</td></tr>
+{% else %}<tr><td colspan="7" class="empty">No members match. Try a different search or clear the filters.</td></tr>{% endfor %}
+{% if total > rows|length %}<tr><td colspan="7" class="mute">Showing {{ rows|length }} of {{ total }}. Narrow the search; downloads include every match.</td></tr>{% endif %}

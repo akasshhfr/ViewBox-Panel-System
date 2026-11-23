@@ -1,0 +1,23 @@
+{% extends "base.html" %}{% from "_icons.html" import icon %}
+{% block crumb %}{{ icon('dashboard') }}Dashboard{% endblock %}
+{% block content %}
+{% set mx = (rows|map(attribute='signups')|max) or 1 %}
+<h1>Welcome back, ops team</h1><p class="sub">Where members come from and how far they get.</p>
+<div class="stats">
+ <div class="stat"><div class="label">Total members</div><div class="num">{{ totals['n'] }}</div><div class="tile">{{ icon('users', 26) }}</div></div>
+ <div class="stat"><div class="label">Reached Fit</div><div class="num">{{ rows|sum(attribute='fit') }}</div><div class="tile">{{ icon('check', 26) }}</div></div>
+ <div class="stat"><div class="label">Completed</div><div class="num">{{ totals['c'] or 0 }}</div><div class="tile">{{ icon('clipboard', 26) }}</div></div>
+ <div class="stat"><div class="label">Sources</div><div class="num">{{ rows|length }}</div><div class="tile">{{ icon('link', 26) }}</div></div>
+</div>
+<div class="two">
+ <div class="card"><div class="cardhead"><h2>Sign-ups by source</h2></div>
+  <div class="bars">{% for r in rows if r['signups'] %}
+   <div class="barrow"><div class="top"><span>{{ r['name'] }}</span><span class="mute">{{ r['signups'] }} sign-ups · {{ r['completed'] }} completed</span></div>
+    <div class="track"><div class="fill light" style="width:{{ (100 * r['signups'] / mx)|round(1) }}%"><div class="fill" style="width:{{ (100 * r['completed'] / r['signups'])|round(1) }}%"></div></div></div></div>
+  {% else %}<div class="empty">No sign-ups yet.</div>{% endfor %}</div>
+  <div class="legend"><span><i class="dot light"></i>Sign-ups</span><span><i class="dot"></i>Completed</span></div></div>
+ <div class="card"><div class="cardhead"><h2>Funnel by source</h2></div>
+  <div class="scroll"><table class="tbl"><tr><th>Source</th><th>Sign-ups</th><th>Fit</th><th>Completed</th></tr>
+  {% for r in rows %}<tr><td>{{ r['name'] }}</td><td>{{ r['signups'] }}</td><td>{{ r['fit'] }}</td><td>{{ r['completed'] }}</td></tr>{% endfor %}</table></div>
+  <p class="mute" style="margin:8px 0 0">Fit counts everyone who reached Fit or Completed. Credit goes to the last tagged link used to sign up.</p></div>
+</div>{% endblock %}

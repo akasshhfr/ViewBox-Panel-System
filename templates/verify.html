@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}
+<form class="card" method="post" data-busy><h1 style="font-size:22px">Enter your code</h1><p class="sub" style="margin-bottom:0">Code for <b>{{ phone }}</b></p>
+ {% if otp %}<p class="mute" style="margin:14px 0 0">Demo mode, your code is:</p><div class="otp">{{ otp }}</div>{% endif %}
+ <label for="code">6-digit code</label><input id="code" name="code" inputmode="numeric" maxlength="6" autocomplete="one-time-code" required>
+ <button class="full" type="submit">Verify</button><p class="mute" style="margin:12px 0 0"><a href="/login">Use a different number</a></p></form>{% endblock %}

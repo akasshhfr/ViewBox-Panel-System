@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% from "_icons.html" import icon %}
+{% block crumb %}{{ icon('clipboard') }}<a href="/admin/surveys" style="text-decoration:none;color:var(--mute)">Surveys</a> / {{ s['title'] }}{% endblock %}
+{% block content %}<h1>{{ s['title'] }}</h1><p class="sub">{{ s['start_date'] }} to {{ s['deadline'] }}</p>
+<div class="stats"><div class="stat"><div class="label">Approved</div><div class="num">{{ tally['Approved'] }}</div><div class="tile">{{ icon('check', 26) }}</div></div>
+<div class="stat"><div class="label">Waitlisted</div><div class="num">{{ tally['Waitlisted'] }}</div><div class="tile">{{ icon('users', 26) }}</div></div>
+<div class="stat"><div class="label">Rejected</div><div class="num">{{ tally['Rejected'] }}</div><div class="tile">{{ icon('file', 26) }}</div></div>
+<div class="stat"><div class="label">Completed{% if s['quota'] %} / quota{% endif %}</div><div class="num">{{ done }}{% if s['quota'] %}/{{ s['quota'] }}{% endif %}</div><div class="tile">{{ icon('clipboard', 26) }}</div></div></div>
+<div class="card scroll"><table class="tbl"><tr><th>Member</th><th>Result</th><th>Reason</th></tr>{% for m, r in rows %}<tr><td><a href="/admin/members/{{ m['id'] }}">{{ m['name'] }} ({{ m['member_code'] }})</a></td><td><span class="badge b-{{ r.status }}">{{ r.status }}</span></td><td class="wrap">{{ r.reason }}</td></tr>{% endfor %}</table></div>
+<p class="mute">Showing the first 100 members with a complete profile.</p>{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "_icons.html" import icon %}
+{% block crumb %}{{ icon('users') }}Members{% endblock %}
+{% block content %}<h1>Members <span class="mute" style="font-size:16px">(<span id="count">{{ total }}</span>)</span></h1><p class="sub">Search as you type, filter, and download exactly what you see.</p>
+<div class="card">
+<form id="filters" class="toolbar" autocomplete="off"><div class="search">{{ icon('search', 16) }}<input name="q" type="search" placeholder="Search name, ID or city" aria-label="Search"></div>
+<select name="source" aria-label="Source"><option value="">All sources</option>{% for s in sources %}<option value="{{ s['id'] }}">{{ s['name'] }}</option>{% endfor %}</select>
+<select name="city" aria-label="City"><option value="">All cities</option>{% for c in cities %}<option>{{ c }}</option>{% endfor %}</select>
+<select name="status" aria-label="Status"><option value="">Any status</option><option value="lead">Lead</option><option value="fit">Fit</option><option value="completed">Completed</option><option value="failed">Did not qualify</option><option value="cooling_off">In 3-month cool-off</option><option value="flagged">Flagged</option></select></form>
+<div class="actions"><a class="btn ghost sm" data-export="/admin/members/export.csv" href="/admin/members/export.csv">{{ icon('download', 14) }}Download CSV</a><a class="btn sm" data-export="/admin/members/export.xlsx" href="/admin/members/export.xlsx">{{ icon('download', 14) }}Download Excel</a></div>
+<div class="scroll"><table class="tbl"><thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>City</th><th>Source</th><th>Stage</th><th>Joined</th></tr></thead><tbody id="rows">{% include "_members_rows.html" %}</tbody></table></div></div>{% endblock %}

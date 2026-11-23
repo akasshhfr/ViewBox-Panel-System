@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block title %}Log in · ViewBox Club{% endblock %}{% block content %}
+<form class="card" method="post" data-busy>
+ <h1 style="font-size:22px">Welcome</h1><p class="sub" style="margin-bottom:6px">Enter your mobile number to see your surveys.</p>
+ {% if touch and referrer %}<p class="flash ok" style="margin-top:12px">You were invited by <b>{{ referrer['name'] or 'a member' }}</b>.</p>{% endif %}
+ <label for="phone">Mobile number</label>
+ <input id="phone" name="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="98XXXXXXXX" value="{{ phone or request.form.get('phone','') }}" required>
+ {% if not touch %}
+ <label for="how">How did you hear about us? <span class="mute">(new members)</span></label>
+ <select id="how" name="how_heard"><option value="">Choose one</option>
+  {% for s in sources %}<option value="{{ s['id'] }}" {{ 'selected' if request.form.get('how_heard')==s['id']|string }}>{{ s['name'] }}</option>{% endfor %}</select>
+ {% endif %}
+ {% if not (touch and referrer) %}
+ <label for="ref">Referred by a member? <span class="mute">(optional member ID or phone)</span></label>
+ <input id="ref" name="referrer" placeholder="e.g. VB10005" value="{{ request.form.get('referrer','') }}">
+ {% endif %}
+ <button class="full" type="submit">Send OTP</button>
+ <p class="mute" style="margin:12px 0 0">A one-time code is shown on the next screen (no SMS in this prototype).</p>
+</form>
+<p class="mute" style="text-align:center"><a href="/admin/login">Admin login</a></p>{% endblock %}

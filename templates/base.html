@@ -1,0 +1,50 @@
+{% from "_icons.html" import icon %}
+{% set path = request.path %}
+{% set area = 'admin' if (path.startswith('/admin') and is_admin) else ('member' if (me and not path.startswith('/admin')) else 'auth') %}
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}ViewBox Club{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></head><body>
+<div class="{{ 'authwrap' if area == 'auth' else 'shell' }}{{ ' single' if area == 'member' else '' }}">
+
+{% if area == 'admin' %}
+<aside class="side">
+  <a class="brandbox" href="/admin"><span class="logo">V</span>ViewBox Panel</a>
+  <nav>
+    <a class="link {{ 'on' if path == '/admin' }}" href="/admin">{{ icon('dashboard') }}Dashboard</a>
+    <a class="link {{ 'on' if path.startswith('/admin/sources') }}" href="/admin/sources">{{ icon('link') }}Sources</a>
+    <a class="link {{ 'on' if path.startswith('/admin/members') }}" href="/admin/members">{{ icon('users') }}Members</a>
+    <a class="link {{ 'on' if path.startswith('/admin/surveys') }}" href="/admin/surveys">{{ icon('clipboard') }}Surveys</a>
+    <hr>
+    <a class="link {{ 'on' if path.startswith('/admin/import') }}" href="/admin/import">{{ icon('upload') }}Import CSV</a>
+    <a class="link {{ 'on' if path.startswith('/admin/meta-leads') }}" href="/admin/meta-leads">{{ icon('zap') }}Meta leads</a>
+  </nav>
+  <div class="sidecard push"><b>Ops admin</b><p>You are logged in to the admin panel.</p>
+    <a class="btn full" style="margin:0" href="/admin/logout">Log out</a></div>
+</aside>
+{% endif %}
+
+<div class="main">
+  {% if area == 'member' %}
+  <header class="mbar">
+    <a class="brandbox" href="/home"><span class="logo">V</span>ViewBox Club</a>
+    <nav class="mnav">
+      <a class="link {{ 'on' if path == '/home' }}" href="/home">{{ icon('clipboard') }}Surveys</a>
+      <a class="link {{ 'on' if path == '/referrals' }}" href="/referrals">{{ icon('gift') }}My referrals</a>
+      <a class="link {{ 'on' if path == '/profile' }}" href="/profile">{{ icon('user') }}Profile</a>
+      <a class="link" href="/logout">{{ icon('logout') }}Log out</a>
+    </nav>
+  </header>
+  {% elif area == 'admin' %}
+  <div class="topbar"><span class="crumb">{% block crumb %}{% endblock %}</span><span class="mute">{{ today_iso }}</span></div>
+  {% else %}
+  <div class="authbrand"><span class="logo">V</span>ViewBox Club</div>
+  {% endif %}
+
+  <div class="content">
+    {% with msgs = get_flashed_messages(with_categories=true) %}{% for c, m in msgs %}<div class="flash {{ c }}" role="alert">{{ m }}</div>{% endfor %}{% endwith %}
+    {% block content %}{% endblock %}
+  </div>
+</div>
+</div>
+<script src="{{ url_for('static', filename='app.js') }}"></script></body></html>

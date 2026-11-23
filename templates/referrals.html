@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block content %}{% from "_icons.html" import icon %}
+<h1>My referrals</h1><p class="sub">Share your link. You earn a bonus when a friend joins, fits a survey and completes it.</p>
+<div class="card"><h3 style="margin-bottom:10px">Your personal link</h3><div class="copy">{{ link }}</div>
+ <p style="margin:12px 0 0"><button type="button" class="sm" data-copy="{{ link }}">{{ icon('copy', 15) }}Copy link</button></p></div>
+<div class="card"><div class="cardhead"><h3>Friends you referred</h3><span class="mute">{{ rows|length }}</span></div>
+{% for r in rows %}<div class="rowcard"><div class="who"><span class="av">{{ (r['name'] or 'N')[0]|upper }}</span><div class="meta"><b>{{ r['name'] or 'New member' }}</b>
+ <div class="mute">{{ mask(r['phone']) }}{% if r['stage']=='failed' %} · Reason: {{ r['stage_reason'] }}{% elif r['stage']=='lead' %} · Waiting for the team to check the fit{% elif r['stage']=='fit' %} · Fit confirmed, waiting for the survey{% else %} · Bonus earned{% endif %}</div></div></div>
+ <span class="badge b-{{ r['stage'] }}">{{ stage_label(r) }}</span></div>
+{% else %}<div class="empty">No referrals yet. Share your link to get started.</div>{% endfor %}</div>{% endblock %}

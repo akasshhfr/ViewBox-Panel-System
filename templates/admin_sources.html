@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% from "_icons.html" import icon %}
+{% block crumb %}{{ icon('link') }}Sources{% endblock %}
+{% block content %}<h1>Sources and tracked links</h1><p class="sub">Every place members come from gets its own link.</p>
+<form class="card" method="post" data-busy><div class="grid">
+ <div><label for="n">New source name</label><input id="n" name="name" placeholder="e.g. LinkedIn" required></div>
+ <div><label for="k">Type</label><select id="k" name="kind"><option value="whatsapp_group">WhatsApp group</option><option value="staff">Staff member</option><option value="social_post">Social post</option><option value="website">Website</option><option value="ads">Ads</option><option value="other" selected>Other</option></select></div>
+ <div style="align-self:end"><button type="submit" style="width:100%">Add source</button></div></div></form>
+<div class="card scroll"><table class="tbl"><tr><th>Source</th><th>Type</th><th>Tracked link</th><th></th></tr>
+{% for r in rows %}<tr><td>{{ r['name'] }}</td><td><span class="badge b-lead">{{ r['kind'] }}</span></td><td class="mute" style="font-family:ui-monospace,monospace;font-size:12.5px">{{ root }}/s/{{ r['slug'] }}</td><td style="text-align:right"><button type="button" class="ghost sm" data-copy="{{ root }}/s/{{ r['slug'] }}">{{ icon('copy', 14) }}Copy</button></td></tr>{% endfor %}</table></div>
+<p class="mute">Each member also has a personal link ({{ root }}/r/code) on their My referrals page.</p>{% endblock %}

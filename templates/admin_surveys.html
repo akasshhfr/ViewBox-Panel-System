@@ -1,0 +1,14 @@
+{% extends "base.html" %}{% from "_icons.html" import icon %}
+{% block crumb %}{{ icon('clipboard') }}Surveys{% endblock %}
+{% block content %}<h1>Surveys</h1><p class="sub">Each rule is Strict (failing it rejects) or Flexible (failing it waitlists). Leave a rule empty to skip it.</p>
+<form class="card" method="post" data-busy><h2>Create a survey</h2>
+<div class="grid"><div><label>Title</label><input name="title" value="{{ form.get('title','') }}" required></div><div><label>Start date</label><input type="date" name="start_date" value="{{ form.get('start_date','') }}" required></div><div><label>Deadline (max 15 days)</label><input type="date" name="deadline" value="{{ form.get('deadline','') }}" required></div><div><label>Quota</label><input type="number" min="1" name="quota" value="{{ form.get('quota','') }}"></div></div>
+<label>Description</label><input name="description" value="{{ form.get('description','') }}">
+<div class="grid"><div><label>Age from</label><input type="number" name="age_min" min="0" value="{{ form.get('age_min','') }}"></div><div><label>Age to</label><input type="number" name="age_max" min="0" value="{{ form.get('age_max','') }}"></div><div><label>Age rule</label><select name="age_strict"><option value="1">Strict</option><option value="0">Flexible</option></select></div></div>
+<div class="grid"><div><label>City</label><input name="city" value="{{ form.get('city','') }}"></div><div><label>City rule</label><select name="city_strict"><option value="0">Flexible</option><option value="1">Strict</option></select></div>
+<div><label>Gender</label><select name="gender"><option value="">Any</option>{% for g in GENDERS %}<option>{{ g }}</option>{% endfor %}</select></div><div><label>Gender rule</label><select name="gender_strict"><option value="1">Strict</option><option value="0">Flexible</option></select></div></div>
+<label>Income ranges allowed</label><div class="chips">{% for i in INCOMES %}<label><input type="checkbox" name="income_ranges" value="{{ i }}">{{ i }}</label>{% endfor %}</div>
+<label>Income rule</label><select name="income_strict" style="max-width:220px"><option value="0">Flexible</option><option value="1">Strict</option></select>
+<label>Topics (highlighted for members with these interests)</label><div class="chips">{% for i in INTERESTS %}<label><input type="checkbox" name="topics" value="{{ i }}">{{ i }}</label>{% endfor %}</div>
+<button class="full" type="submit" style="max-width:240px">Create survey</button></form>
+<div class="card scroll"><div class="cardhead"><h2>All surveys</h2></div><table class="tbl"><tr><th>Title</th><th>Window</th><th>Quota</th><th>Completed</th></tr>{% for s in rows %}<tr><td><a href="/admin/surveys/{{ s['id'] }}">{{ s['title'] }}</a></td><td>{{ s['start_date'] }} to {{ s['deadline'] }}</td><td>{{ s['quota'] or '-' }}</td><td>{{ s['done'] }}</td></tr>{% else %}<tr><td colspan="4" class="empty">No surveys yet.</td></tr>{% endfor %}</table></div>{% endblock %}

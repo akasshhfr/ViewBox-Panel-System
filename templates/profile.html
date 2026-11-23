@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block content %}<h1>Your profile</h1><p class="sub">Fill this in once so we can match you to surveys.</p>
+<form class="card" method="post" data-busy>
+ <div class="grid">
+  <div><label for="name">Full name</label><input id="name" name="name" value="{{ m['name'] or '' }}" required></div>
+  <div><label for="dob">Date of birth</label><input id="dob" name="dob" type="date" max="{{ today_iso }}" value="{{ m['dob'] or '' }}" required></div>
+  <div><label for="gender">Gender</label><select id="gender" name="gender" required><option value="">Choose</option>{% for g in GENDERS %}<option {{ 'selected' if m['gender']==g }}>{{ g }}</option>{% endfor %}</select></div>
+  <div><label for="city">City</label><input id="city" name="city" value="{{ m['city'] or '' }}" required></div>
+  <div><label for="inc">Income range (per year)</label><select id="inc" name="income_range" required><option value="">Choose</option>{% for i in INCOMES %}<option {{ 'selected' if m['income_range']==i }}>{{ i }}</option>{% endfor %}</select></div>
+  <div><label for="email">Email <span class="mute">(optional)</span></label><input id="email" name="email" type="email" value="{{ m['email'] or '' }}"></div>
+ </div>
+ <label>Interests</label><div class="chips">{% for i in INTERESTS %}<label><input type="checkbox" name="interests" value="{{ i }}" {{ 'checked' if i in selected }}>{{ i }}</label>{% endfor %}</div>
+ <button class="full" type="submit" style="max-width:240px">Save profile</button></form>{% endblock %}
