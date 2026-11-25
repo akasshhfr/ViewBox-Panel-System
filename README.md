@@ -45,3 +45,5 @@ python -m unittest discover -s tests
 OTP and Meta lead integration are mocked. Advanced fraud detection and payout integration are not implemented.
 
 Database design and user flow are available in the `design/` folder.
+
+### @akasshhfr
