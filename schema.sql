@@ -4,14 +4,14 @@ CREATE TABLE IF NOT EXISTS sources (
   id INTEGER PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
   kind TEXT NOT NULL DEFAULT 'other',   -- whatsapp_group | staff | social_post | website | referral | ads | other
-  slug TEXT NOT NULL UNIQUE,            
+  slug TEXT NOT NULL UNIQUE,            -- used in the tracked link /s/<slug>
   active INTEGER NOT NULL DEFAULT 1,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 CREATE TABLE IF NOT EXISTS members (
   id INTEGER PRIMARY KEY,
-  member_code TEXT NOT NULL UNIQUE,     
+  member_code TEXT NOT NULL UNIQUE,     -- VB10001 style, shown to humans
   name TEXT,
   phone TEXT NOT NULL UNIQUE,           -- normalised 10-digit Indian mobile
   email TEXT,
@@ -20,15 +20,15 @@ CREATE TABLE IF NOT EXISTS members (
   city TEXT,
   income_range TEXT,
   interests TEXT NOT NULL DEFAULT '',   -- ';' separated
-  source_id INTEGER REFERENCES sources(id),              )
-  first_touch_source_id INTEGER REFERENCES sources(id),  
-  referred_by_id INTEGER REFERENCES members(id),         
-  referral_code TEXT NOT NULL UNIQUE,   
+  source_id INTEGER REFERENCES sources(id),              -- credited source (last touch)
+  first_touch_source_id INTEGER REFERENCES sources(id),  -- kept for analysis
+  referred_by_id INTEGER REFERENCES members(id),         -- credited referrer
+  referral_code TEXT NOT NULL UNIQUE,   -- personal link /r/<code>
   joined_on TEXT,
   last_survey_completed_on TEXT,
   stage TEXT NOT NULL DEFAULT 'lead' CHECK (stage IN ('lead','fit','completed','failed')),
   stage_reason TEXT,
-  flag TEXT,                           
+  flag TEXT,                            -- review note (e.g. self-referral attempt); never auto-deleted
   profile_complete INTEGER NOT NULL DEFAULT 0,
   meta_lead_id TEXT UNIQUE,
   meta_campaign_id TEXT,
@@ -42,14 +42,14 @@ CREATE TABLE IF NOT EXISTS surveys (
   id INTEGER PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
-  topics TEXT NOT NULL DEFAULT '',     
+  topics TEXT NOT NULL DEFAULT '',      -- ';' separated, used to highlight interest matches
   start_date TEXT NOT NULL,
-  deadline TEXT NOT NULL,               
+  deadline TEXT NOT NULL,               -- must be <= start_date + 15 days
   quota INTEGER,
   age_min INTEGER, age_max INTEGER, age_strict INTEGER NOT NULL DEFAULT 1,
   city TEXT, city_strict INTEGER NOT NULL DEFAULT 0,
   gender TEXT, gender_strict INTEGER NOT NULL DEFAULT 1,
-  income_ranges TEXT, income_strict INTEGER NOT NULL DEFAULT 0,  
+  income_ranges TEXT, income_strict INTEGER NOT NULL DEFAULT 0,  -- ';' separated
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 

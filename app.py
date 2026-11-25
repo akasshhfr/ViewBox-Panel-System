@@ -42,7 +42,7 @@ def create_app(config=None):
     init_schema(conn)
     conn.close()
 
-    
+    # ---------- helpers ----------
     def today():
         return date.today()
 
@@ -132,7 +132,7 @@ def create_app(config=None):
         return {"me": current_member() if session.get("member_id") else None,
                 "is_admin": session.get("is_admin"), "today_iso": today().isoformat()}
 
-    
+    # ---------- member portal ----------
     @app.route("/")
     def index():
         return redirect(url_for("home" if session.get("member_id") else "login"))
@@ -206,11 +206,18 @@ def create_app(config=None):
         """Source = last tagged link (or the 'how did you hear' answer). Referrer = link owner, else typed code."""
         touch = valid_touch()
         flag = None
+        src_id = first_id = ref_id = None
         if touch:
-            src_id, first_id, ref_id = touch["last"], touch["first"], touch.get("referrer_id")
-        else:
+            # The browser can remember ids from an older database, so check they still exist.
+            if db.execute("SELECT 1 FROM sources WHERE id=?", (touch["last"],)).fetchone():
+                src_id = touch["last"]
+                still_there = db.execute("SELECT 1 FROM sources WHERE id=?", (touch["first"],)).fetchone()
+                first_id = touch["first"] if still_there else src_id
+                ref_id = touch.get("referrer_id")
+        if src_id is None:
             row = db.execute("SELECT id FROM sources WHERE id=?", (pend.get("how") or 0,)).fetchone()
-            src_id = row["id"] if row else source_by_name(db, "Unknown")["id"]
+            unknown = source_by_name(db, "Unknown")
+            src_id = row["id"] if row else (unknown["id"] if unknown else None)
             first_id, ref_id = src_id, None
         typed = resolve_referrer(db, pend.get("ref"))
         if pend.get("ref") and not typed:
@@ -219,7 +226,9 @@ def create_app(config=None):
             ref_id = typed["id"]
         if ref_id:
             r = db.execute("SELECT phone FROM members WHERE id=?", (ref_id,)).fetchone()
-            if r["phone"] == pend["phone"]:
+            if not r:
+                ref_id = None
+            elif r["phone"] == pend["phone"]:
                 ref_id, flag = None, "self-referral attempt"
         with db:
             cur = db.execute(
@@ -290,7 +299,7 @@ def create_app(config=None):
         session.clear()
         return redirect(url_for("login"))
 
-    
+    # ---------- admin ----------
     @app.route("/admin/login", methods=["GET", "POST"])
     def admin_login():
         if request.method == "POST":
@@ -491,7 +500,7 @@ def create_app(config=None):
             if len(out) < 100: out.append((m, r))
         return render_template("admin_survey.html", s=s, rows=out, tally=tally, done=done)
 
-    
+    # ---------- CSV import (preview -> confirm) ----------
     UPLOADS = os.path.join(os.path.dirname(app.config["DATABASE"]), "uploads")
 
     @app.route("/admin/import", methods=["GET", "POST"])
@@ -538,7 +547,7 @@ def create_app(config=None):
         codes = [r[0] for r in db.execute("SELECT member_code FROM members")]
         return importer.parse_csv(text, phones, codes, today())
 
-    
+    # ---------- Meta (Facebook / Instagram) lead ads mock endpoint ----------
     def lead_fields(payload):
         out = {}
         for item in payload.get("field_data") or []:

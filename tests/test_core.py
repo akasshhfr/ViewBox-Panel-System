@@ -72,6 +72,13 @@ class Web(unittest.TestCase):
                WHERE m.phone='9111111111'""").fetchone()
         self.assertEqual(row, ("Instagram", "Instagram", "VB10000"))  # channel credit AND typed referrer both kept
 
+    def test_old_cookie_ids_do_not_crash_signup(self):
+        c = self.app.test_client()
+        with c.session_transaction() as s:   # ids that do not exist in this database
+            s["touch"] = {"first": 999, "last": 999, "referrer_id": 999, "at": "2099-01-01T00:00:00"}
+        r = self.login(c, "9444444444")
+        self.assertEqual(r.status_code, 302)
+
     def test_untagged_asks_how_heard(self):
         c = self.app.test_client()
         r = c.post("/login", data={"phone": "9222222222"})
